@@ -1,7 +1,7 @@
 use std::pin::Pin;
 
-use futures::{AsyncRead, AsyncReadExt};
 use ipi::anyhow::Result;
+use tokio::io::{AsyncRead, AsyncReadExt};
 
 use crate::path::Path;
 
