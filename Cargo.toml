@@ -6,8 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["alloc", "derive"]
-alloc = ["ipi/alloc"]
+default = ["derive"]
 derive = ["ipis-derive"]
 
 [dependencies]
