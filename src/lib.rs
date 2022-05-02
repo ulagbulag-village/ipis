@@ -1,5 +1,5 @@
 #[macro_use]
-extern crate async_trait;
+pub extern crate async_trait;
 #[macro_use]
 extern crate bytecheck;
 #[macro_use]
