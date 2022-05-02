@@ -3,7 +3,7 @@ extern crate rkyv;
 
 use bytecheck::CheckBytes;
 use ipi::value::text::Text;
-use ipis::{object::Object, Class};
+use ipis::{class::Class, object::Object};
 use rkyv::Deserialize;
 
 #[test]

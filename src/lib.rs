@@ -15,8 +15,3 @@ pub mod storage;
 
 // re-export core
 pub use ipi as core;
-
-// derived types
-pub use self::class::Class;
-#[cfg(feature = "ipis-derive")]
-pub use ipis_derive::Class;

@@ -1,6 +1,9 @@
 pub mod cursor;
 pub mod metadata;
 
+// derived types
+pub use ipis_derive::Class;
+
 pub trait Class {
     type Cursor: ::core::fmt::Debug + Default;
 
