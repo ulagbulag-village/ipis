@@ -55,7 +55,7 @@ where
         Ok(boxed)
     }
 
-    pub fn deserialize(&self) -> Result<T>
+    pub fn deserialize_into(&self) -> Result<T>
     where
         <T as Archive>::Archived: Deserialize<T, ::rkyv::Infallible>,
     {
