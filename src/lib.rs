@@ -12,6 +12,7 @@ pub mod class;
 pub mod data;
 pub mod object;
 pub mod path;
+pub mod pin;
 pub mod primitives;
 pub mod storage;
 
