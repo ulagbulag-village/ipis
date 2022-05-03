@@ -2,6 +2,7 @@
 pub extern crate async_trait;
 #[macro_use]
 pub extern crate bytecheck;
+pub extern crate log;
 #[macro_use]
 pub extern crate rkyv;
 pub extern crate tokio;
