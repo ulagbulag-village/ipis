@@ -17,7 +17,7 @@ async-trait = "0.1"
 bytecheck = "0.6"
 log = "0.4"
 rkyv = { version = "0.7", features = ["validation"] }
-tokio = { version = "1.18", features = ["io-util"] }
+tokio = { version = "1.18", default-features = false, features = ["io-util"] }
 
 [dev-dependencies]
 bytecheck = "0.6"
