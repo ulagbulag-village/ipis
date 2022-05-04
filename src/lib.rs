@@ -1,4 +1,3 @@
-#[macro_use]
 pub extern crate async_trait;
 #[macro_use]
 pub extern crate bytecheck;
@@ -14,7 +13,6 @@ pub mod object;
 pub mod path;
 pub mod pin;
 pub mod primitives;
-pub mod storage;
 
 // re-export core
 pub use ipi as core;
