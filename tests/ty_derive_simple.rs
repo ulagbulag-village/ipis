@@ -4,7 +4,7 @@ extern crate rkyv;
 use bytecheck::CheckBytes;
 use ipi::value::text::Text;
 use ipis::{class::Class, object::Object};
-use rkyv::Deserialize;
+use rkyv::{Deserialize, de::deserializers::SharedDeserializeMap};
 
 #[test]
 fn test() {
@@ -75,6 +75,8 @@ fn test() {
     assert_eq!(&archived.sub.string, "hello world!");
 
     // And you can always deserialize back to the original type
-    let deserialized: MyStruct = archived.deserialize(&mut rkyv::Infallible).unwrap();
+    let deserialized: MyStruct = archived
+        .deserialize(&mut SharedDeserializeMap::default())
+        .unwrap();
     assert_eq!(&deserialized, &value);
 }

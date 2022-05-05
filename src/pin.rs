@@ -2,7 +2,10 @@ use core::{marker::PhantomPinned, pin::Pin, ptr::NonNull};
 
 use bytecheck::CheckBytes;
 use ipi::anyhow::{anyhow, Result};
-use rkyv::{validation::validators::DefaultValidator, Archive, Deserialize};
+use rkyv::{
+    de::deserializers::SharedDeserializeMap, validation::validators::DefaultValidator, Archive,
+    Deserialize,
+};
 
 pub type Pinned<T> = Pin<Box<PinnedInner<T>>>;
 
@@ -57,8 +60,9 @@ where
 
     pub fn deserialize_into(&self) -> Result<T>
     where
-        <T as Archive>::Archived: Deserialize<T, ::rkyv::Infallible>,
+        <T as Archive>::Archived: Deserialize<T, SharedDeserializeMap>,
     {
-        Deserialize::<T, _>::deserialize(&**self, &mut ::rkyv::Infallible).map_err(Into::into)
+        Deserialize::<T, _>::deserialize(&**self, &mut SharedDeserializeMap::default())
+            .map_err(Into::into)
     }
 }
