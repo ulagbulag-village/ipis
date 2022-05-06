@@ -12,6 +12,7 @@ pub mod data;
 pub mod env;
 pub mod object;
 pub mod path;
+pub mod logger;
 pub mod pin;
 pub mod primitives;
 
