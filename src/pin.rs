@@ -58,6 +58,18 @@ where
         Ok(boxed)
     }
 
+    pub fn deserialize_owned(data: impl AsRef<[u8]>) -> Result<T>
+    where
+        <T as Archive>::Archived:
+            for<'a> CheckBytes<DefaultValidator<'a>> + Deserialize<T, SharedDeserializeMap>,
+    {
+        let archived = ::rkyv::check_archived_root::<T>(data.as_ref())
+            .map_err(|_| anyhow!("failed to check the archived bytes"))?;
+
+        Deserialize::<T, _>::deserialize(archived, &mut SharedDeserializeMap::default())
+            .map_err(Into::into)
+    }
+
     pub fn deserialize_into(&self) -> Result<T>
     where
         <T as Archive>::Archived: Deserialize<T, SharedDeserializeMap>,
