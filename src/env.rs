@@ -9,7 +9,7 @@ pub trait Infer<'a> {
     async fn infer() -> Self
     where
         Self: Sized,
-        'async_trait: 'a,
+        'a: 'async_trait,
     {
         // init logger
         crate::logger::init_once();
@@ -26,13 +26,13 @@ pub trait Infer<'a> {
     async fn try_infer() -> Result<Self>
     where
         Self: Sized,
-        'async_trait: 'a;
+        'a: 'async_trait;
 
     async fn genesis(
         args: <Self as Infer<'a>>::GenesisArgs,
     ) -> Result<<Self as Infer<'a>>::GenesisResult>
     where
-        'async_trait: 'a;
+        'a: 'async_trait;
 }
 
 pub fn infer<K: AsRef<str>, R>(key: K) -> Result<R>
