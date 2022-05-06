@@ -1,5 +1,11 @@
 use ipi::anyhow::{anyhow, Error, Result};
 
+pub trait Infer {
+    fn infer() -> Result<Self>
+    where
+        Self: Sized;
+}
+
 pub fn infer<K: AsRef<str>, R>(key: K) -> Result<R>
 where
     R: ::core::str::FromStr,
