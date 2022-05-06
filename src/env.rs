@@ -1,9 +1,14 @@
 use ipi::anyhow::{anyhow, Error, Result};
 
 pub trait Infer {
+    type GenesisArgs;
+    type GenesisResult;
+
     fn infer() -> Result<Self>
     where
         Self: Sized;
+
+    fn genesis(args: <Self as Infer>::GenesisArgs) -> Result<<Self as Infer>::GenesisResult>;
 }
 
 pub fn infer<K: AsRef<str>, R>(key: K) -> Result<R>
