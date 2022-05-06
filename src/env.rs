@@ -1,7 +1,7 @@
 use ipi::anyhow::{anyhow, Error, Result};
 
 pub trait Infer {
-    type GenesisArgs;
+    type GenesisArgs: ?Sized;
     type GenesisResult;
 
     fn infer() -> Result<Self>
