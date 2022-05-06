@@ -1,6 +1,6 @@
 use ipi::anyhow::{anyhow, Error, Result};
 
-pub trait Infer<'a> {
+pub trait Infer {
     type GenesisArgs: ?Sized;
     type GenesisResult;
 
@@ -8,9 +8,7 @@ pub trait Infer<'a> {
     where
         Self: Sized;
 
-    fn genesis(
-        args: &'a <Self as Infer<'a>>::GenesisArgs,
-    ) -> Result<<Self as Infer<'a>>::GenesisResult>;
+    fn genesis(args: &<Self as Infer>::GenesisArgs) -> Result<<Self as Infer>::GenesisResult>;
 }
 
 pub fn infer<K: AsRef<str>, R>(key: K) -> Result<R>
