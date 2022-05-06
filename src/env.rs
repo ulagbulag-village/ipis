@@ -1,20 +1,17 @@
-use async_trait::async_trait;
 use ipi::anyhow::{anyhow, Error, Result};
 
-#[async_trait]
 pub trait Infer<'a> {
     type GenesisArgs: ?Sized;
     type GenesisResult;
 
-    async fn infer() -> Self
+    fn infer() -> Self
     where
         Self: Sized,
-        'a: 'async_trait,
     {
         // init logger
         crate::logger::init_once();
 
-        match <Self as Infer<'a>>::try_infer().await {
+        match <Self as Infer<'a>>::try_infer() {
             Ok(this) => this,
             Err(e) => {
                 ::log::error!("failed to infer: {}", e);
@@ -23,16 +20,13 @@ pub trait Infer<'a> {
         }
     }
 
-    async fn try_infer() -> Result<Self>
+    fn try_infer() -> Result<Self>
     where
-        Self: Sized,
-        'a: 'async_trait;
+        Self: Sized;
 
-    async fn genesis(
+    fn genesis(
         args: <Self as Infer<'a>>::GenesisArgs,
-    ) -> Result<<Self as Infer<'a>>::GenesisResult>
-    where
-        'a: 'async_trait;
+    ) -> Result<<Self as Infer<'a>>::GenesisResult>;
 }
 
 pub fn infer<K: AsRef<str>, R>(key: K) -> Result<R>
