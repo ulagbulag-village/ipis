@@ -18,7 +18,10 @@ bytecheck = "0.6"
 log = "0.4"
 pretty_env_logger = "0.4"
 rkyv = { version = "0.7", features = ["validation"] }
-tokio = { version = "1.18", default-features = false, features = ["io-util"] }
+tokio = { version = "1.18", default-features = false, features = [
+    "io-util",
+    "sync",
+] }
 
 [dev-dependencies]
 bytecheck = "0.6"
