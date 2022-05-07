@@ -14,8 +14,8 @@ pub trait Infer<'a> {
         match <Self as Infer<'a>>::try_infer() {
             Ok(this) => this,
             Err(e) => {
-                ::log::error!("failed to infer: {}", e);
-                panic!("failed to infer: {}", e);
+                ::log::error!("failed to infer: {e}");
+                panic!("failed to infer: {e}");
             }
         }
     }
@@ -37,6 +37,6 @@ where
     let key = key.as_ref();
 
     ::std::env::var(key)
-        .map_err(|_| anyhow!("failed to find the environment variable: {}", key))
+        .map_err(|_| anyhow!("failed to find the environment variable: {key}"))
         .and_then(|e| e.parse().map_err(Into::into))
 }
