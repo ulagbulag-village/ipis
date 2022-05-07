@@ -21,6 +21,8 @@ rkyv = { version = "0.7", features = ["validation"] }
 tokio = { version = "1.18", default-features = false, features = [
     "io-util",
     "macros",
+    # NOTE: multithreading is currently **NOT** supported in `WASI`.
+    "rt-multi-thread",
     "sync",
 ] }
 
