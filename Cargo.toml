@@ -23,6 +23,7 @@ ipis-derive = { path = "./derive", optional = true }
 
 async-trait = "0.1"
 bytecheck = "0.6"
+itertools = "0.10"
 log = "0.4"
 pretty_env_logger = "0.4"
 rkyv = { version = "0.7", features = ["validation"] }

@@ -1,6 +1,7 @@
 pub extern crate async_trait;
 #[macro_use]
 pub extern crate bytecheck;
+pub extern crate itertools;
 pub extern crate log;
 #[macro_use]
 pub extern crate rkyv;
@@ -10,9 +11,9 @@ pub mod attention;
 pub mod class;
 pub mod data;
 pub mod env;
+pub mod logger;
 pub mod object;
 pub mod path;
-pub mod logger;
 pub mod pin;
 pub mod primitives;
 
