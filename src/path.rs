@@ -11,11 +11,13 @@ pub struct Path {
     pub len: u64,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Archive, Serialize, Deserialize,
+)]
 #[archive(bound(archive = "
     <Path as ::rkyv::Archive>::Archived: ::core::fmt::Debug + PartialEq + Eq + PartialOrd + Ord + ::core::hash::Hash,
 "))]
-#[archive(compare(PartialEq))]
+#[archive(compare(PartialEq, PartialOrd))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, PartialOrd, Ord, Hash))]
 
 pub struct DynPath<Path = Option<self::Path>> {
