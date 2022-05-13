@@ -19,6 +19,7 @@ pub struct Path {
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, PartialOrd, Ord, Hash))]
 
 pub struct DynPath<Path = Option<self::Path>> {
+    pub kind: Hash,
     pub word: Hash,
     pub path: Path,
 }
@@ -26,6 +27,7 @@ pub struct DynPath<Path = Option<self::Path>> {
 impl From<DynPath<Path>> for DynPath {
     fn from(value: DynPath<Path>) -> Self {
         Self {
+            kind: value.kind,
             word: value.word,
             path: Some(value.path),
         }
