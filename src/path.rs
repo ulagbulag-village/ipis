@@ -12,10 +12,22 @@ pub struct Path {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Archive, Serialize, Deserialize)]
+#[archive(bound(archive = "
+    <Path as ::rkyv::Archive>::Archived: ::core::fmt::Debug + PartialEq + Eq + PartialOrd + Ord + ::core::hash::Hash,
+"))]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, PartialOrd, Ord, Hash))]
 
-pub enum DynPath {
-    Path(Path),
-    Name(String),
+pub struct DynPath<Path = Option<self::Path>> {
+    pub word: String,
+    pub path: Path,
+}
+
+impl From<DynPath<Path>> for DynPath {
+    fn from(value: DynPath<Path>) -> Self {
+        Self {
+            word: value.word,
+            path: Some(value.path),
+        }
+    }
 }
