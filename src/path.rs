@@ -19,7 +19,7 @@ pub struct Path {
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, PartialOrd, Ord, Hash))]
 
 pub struct DynPath<Path = Option<self::Path>> {
-    pub word: String,
+    pub word: Hash,
     pub path: Path,
 }
 
