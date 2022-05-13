@@ -35,3 +35,13 @@ impl From<DynPath<Path>> for DynPath {
         }
     }
 }
+
+impl<Path> DynPath<Path> {
+    pub fn remove_path(self) -> DynPath<()> {
+        DynPath {
+            kind: self.kind,
+            word: self.word,
+            path: (),
+        }
+    }
+}
