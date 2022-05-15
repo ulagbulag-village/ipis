@@ -1,6 +1,7 @@
 pub extern crate async_trait;
 #[macro_use]
 pub extern crate bytecheck;
+pub extern crate futures;
 pub extern crate itertools;
 pub extern crate log;
 #[macro_use]

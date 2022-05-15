@@ -23,6 +23,7 @@ ipis-derive = { path = "./derive", optional = true }
 
 async-trait = "0.1"
 bytecheck = "0.6"
+futures = "0.3"
 itertools = "0.10"
 log = "0.4"
 num-traits = "0.2"
