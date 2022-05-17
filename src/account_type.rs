@@ -1,12 +1,11 @@
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
-#[archive(compare(PartialEq))]
-#[archive_attr(derive(CheckBytes, Copy, Clone, Debug, PartialEq, Eq, Hash))]
-pub enum AccountType {
-    Any,
-    IPDIS,
-    IPIIS,
-    IPNIS,
-    IPQIS,
-    IPSIS,
-    IPWIS,
+bitflags::bitflags! {
+    pub struct AccountType: u8 {
+        const IPIIS = 0b10000000;
+
+        const IPDIS = 0b01000000;
+        const IPNIS = 0b00100000;
+        const IPQIS = 0b00010000;
+        const IPSIS = 0b00001000;
+        const IPWIS = 0b00000100;
+    }
 }
