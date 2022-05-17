@@ -12,6 +12,7 @@ pub mod attention;
 pub mod class;
 pub mod data;
 pub mod env;
+pub mod function;
 pub mod logger;
 pub mod object;
 pub mod path;
