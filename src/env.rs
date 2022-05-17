@@ -3,8 +3,8 @@ use ipi::anyhow::{anyhow, Error, Result};
 
 #[async_trait]
 pub trait Infer<'a> {
-    type GenesisArgs: ?Sized;
-    type GenesisResult;
+    type GenesisArgs: Send + ?Sized;
+    type GenesisResult: Send;
 
     async fn infer() -> Self
     where
