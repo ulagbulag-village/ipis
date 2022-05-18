@@ -9,7 +9,6 @@ pub extern crate log;
 pub extern crate rkyv;
 pub extern crate tokio;
 
-pub mod account_type;
 pub mod attention;
 pub mod class;
 pub mod data;
