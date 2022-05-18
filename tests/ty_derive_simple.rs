@@ -3,8 +3,11 @@ extern crate rkyv;
 
 use bytecheck::CheckBytes;
 use ipi::value::text::Text;
-use ipis::{class::Class, object::Object};
-use rkyv::{Deserialize, de::deserializers::SharedDeserializeMap};
+use ipis::{
+    class::{metadata::ClassMetadata, Class},
+    object::Object,
+};
+use rkyv::{de::deserializers::SharedDeserializeMap, Deserialize};
 
 #[test]
 fn test() {
@@ -64,19 +67,38 @@ fn test() {
         "()",
     );
 
-    // Serializing
-    let bytes = rkyv::to_bytes::<_, 256>(&value).unwrap();
+    {
+        // Serializing
+        let bytes = rkyv::to_bytes::<_, 256>(&value).unwrap();
 
-    // You can use the safe API for fast zero-copy deserialization
-    let archived = rkyv::check_archived_root::<MyStruct>(&bytes[..]).unwrap();
-    assert_eq!(archived, &value);
-    assert_eq!(archived.sub.i64, 42);
-    assert_eq!(&archived.sub.bytes, &[0x12, 0x34, 0x56, 0x78]);
-    assert_eq!(&archived.sub.string, "hello world!");
+        // You can use the safe API for fast zero-copy deserialization
+        let archived = rkyv::check_archived_root::<MyStruct>(&bytes[..]).unwrap();
+        assert_eq!(archived, &value);
+        assert_eq!(archived.sub.i64, 42);
+        assert_eq!(&archived.sub.bytes, &[0x12, 0x34, 0x56, 0x78]);
+        assert_eq!(&archived.sub.string, "hello world!");
 
-    // And you can always deserialize back to the original type
-    let deserialized: MyStruct = archived
-        .deserialize(&mut SharedDeserializeMap::default())
-        .unwrap();
-    assert_eq!(&deserialized, &value);
+        // And you can always deserialize back to the original type
+        let deserialized: MyStruct = archived
+            .deserialize(&mut SharedDeserializeMap::default())
+            .unwrap();
+        assert_eq!(&deserialized, &value);
+    }
+
+    {
+        let value = MyStruct::__class_metadata();
+
+        // Serializing
+        let bytes = rkyv::to_bytes::<_, 256>(&value).unwrap();
+
+        // You can use the safe API for fast zero-copy deserialization
+        let archived = rkyv::check_archived_root::<ClassMetadata>(&bytes[..]).unwrap();
+        assert_eq!(archived, &value);
+
+        // And you can always deserialize back to the original type
+        let deserialized: ClassMetadata = archived
+            .deserialize(&mut SharedDeserializeMap::default())
+            .unwrap();
+        assert_eq!(&deserialized, &value);
+    }
 }
