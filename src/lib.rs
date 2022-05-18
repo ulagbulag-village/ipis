@@ -4,6 +4,7 @@ pub extern crate bytecheck;
 pub extern crate bitflags;
 pub extern crate futures;
 pub extern crate itertools;
+pub extern crate lazy_static;
 pub extern crate log;
 #[macro_use]
 pub extern crate rkyv;
