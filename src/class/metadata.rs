@@ -13,6 +13,8 @@ pub struct ClassMetadata {
     pub children: Option<Vec<ClassMetadata>>,
 }
 
+impl ::ipi::signed::IsSigned for ClassMetadata {}
+
 impl ::core::ops::Deref for ClassMetadata {
     type Target = ClassLeaf;
 
@@ -56,6 +58,8 @@ pub struct ClassLeaf {
     pub doc: ClassDoc,
     pub ty: ValueType,
 }
+
+impl ::ipi::signed::IsSigned for ClassLeaf {}
 
 pub type ClassName = Text;
 pub type ClassDoc = Option<Text>;

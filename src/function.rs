@@ -15,6 +15,8 @@ pub struct Function<IO = ClassMetadata, Lambda = DynPath> {
     pub lambda: Lambda,
 }
 
+impl<IO, Lambda> ::ipi::signed::IsSigned for Function<IO, Lambda> {}
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq))]
@@ -22,3 +24,5 @@ pub enum DynFunction {
     Text(Text),
     Raw(Box<Function>),
 }
+
+impl ::ipi::signed::IsSigned for DynFunction {}

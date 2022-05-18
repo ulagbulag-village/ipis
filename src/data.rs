@@ -13,6 +13,8 @@ pub struct Data<Class = crate::class::metadata::ClassMetadata, Inner = crate::pa
     pub inner: Inner,
 }
 
+impl<Class, Inner> ::ipi::signed::IsSigned for Data<Class, Inner> {}
+
 impl<Type, Inner> ::core::ops::Deref for Data<Type, Inner> {
     type Target = Inner;
 

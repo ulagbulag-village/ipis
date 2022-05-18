@@ -5,6 +5,8 @@ use super::metadata::{ClassLeaf, ClassName};
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct ClassCursorData(Vec<ClassCursorLeaf>);
 
+impl ::ipi::signed::IsSigned for ClassCursorData {}
+
 impl ::core::fmt::Display for ClassCursorData {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         for (idx, leaf) in self.0.iter().enumerate() {
@@ -33,6 +35,8 @@ pub struct ClassCursorLeaf {
     pub key: ClassName,
     pub value: ClassLeaf,
 }
+
+impl ::ipi::signed::IsSigned for ClassCursorLeaf {}
 
 impl ::core::ops::Deref for ClassCursorLeaf {
     type Target = ClassLeaf;

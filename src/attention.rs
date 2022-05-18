@@ -13,6 +13,8 @@ pub struct Attention<Unit = AttentionUnit, Data = crate::data::Data> {
     pub data: Data,
 }
 
+impl<Unit, Data> ::ipi::signed::IsSigned for Attention<Unit, Data> {}
+
 #[derive(
     Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Archive, Serialize, Deserialize,
 )]
@@ -26,3 +28,5 @@ pub enum AttentionUnit {
     Ever,
     Never,
 }
+
+impl ::ipi::signed::IsSigned for AttentionUnit {}

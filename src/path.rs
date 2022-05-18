@@ -11,6 +11,8 @@ pub struct Path {
     pub len: u64,
 }
 
+impl ::ipi::signed::IsSigned for Path {}
+
 #[derive(
     Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Archive, Serialize, Deserialize,
 )]
@@ -25,6 +27,8 @@ pub struct DynPath<Path = Option<self::Path>> {
     pub word: Hash,
     pub path: Path,
 }
+
+impl<Path> ::ipi::signed::IsSigned for DynPath<Path> {}
 
 impl From<DynPath<Path>> for DynPath {
     fn from(value: DynPath<Path>) -> Self {
