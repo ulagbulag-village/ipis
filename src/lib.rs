@@ -6,6 +6,7 @@ pub extern crate futures;
 pub extern crate itertools;
 pub extern crate lazy_static;
 pub extern crate log;
+pub extern crate paste;
 #[macro_use]
 pub extern crate rkyv;
 pub extern crate tokio;
