@@ -19,6 +19,7 @@ where
 }
 
 unsafe impl<T> Send for PinnedInner<T> where T: Archive {}
+unsafe impl<T> Sync for PinnedInner<T> where T: Archive {}
 
 impl<T> ::core::ops::Deref for PinnedInner<T>
 where
