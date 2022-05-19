@@ -43,11 +43,23 @@ where
         T: IsSigned,
         R: AsyncRead + Unpin,
     {
-        let len: usize = src.read_u64().await?.try_into()?;
+        let len = src.read_u64().await?;
+        Self::recv_exact(src, len).await.map(Self::OwnedVec)
+    }
+}
 
-        let mut buf = vec![0; len];
+impl<'io, T> DynStream<'io, T>
+where
+    T: Archive,
+{
+    async fn recv_exact<R>(mut src: R, len: u64) -> Result<Vec<u8>>
+    where
+        T: IsSigned,
+        R: AsyncRead + Unpin,
+    {
+        let mut buf = vec![0; len.try_into()?];
         src.read_exact(&mut buf).await?;
-        Ok(Self::OwnedVec(buf))
+        Ok(buf)
     }
 }
 
@@ -95,8 +107,7 @@ where
             }
             Self::Stream { len, recv } => {
                 // recv data
-                let mut buf = vec![0; (*len).try_into()?];
-                recv.read_exact(&mut buf).await?;
+                let buf = Self::recv_exact(recv, *len).await?;
 
                 let data = PinnedInner::<T>::deserialize_owned(buf)?;
                 *self = Self::Owned(data);
@@ -122,8 +133,7 @@ where
             Self::OwnedVec(data) => PinnedInner::<T>::deserialize_owned(data),
             Self::Stream { len, recv } => {
                 // recv data
-                let mut buf = vec![0; (*len).try_into()?];
-                recv.read_exact(&mut buf).await?;
+                let buf = Self::recv_exact(recv, *len).await?;
 
                 let data = PinnedInner::<T>::deserialize_owned(buf)?;
                 *self = Self::Owned(data.clone());
@@ -138,18 +148,44 @@ where
         W: AsyncWrite + Unpin,
     {
         match self {
-            Self::Archived(data) => dst.write_all(data.as_ref()).await.map_err(Into::into),
+            Self::Archived(data) => {
+                let len = data.as_ref().len().try_into()?;
+
+                dst.write_u64(len).await?;
+                dst.write_all(data.as_ref()).await.map_err(Into::into)
+            }
             Self::Borrowed(data) => {
                 let data = ::rkyv::to_bytes(*data)?;
+                let len = data.len().try_into()?;
+
+                dst.write_u64(len).await?;
                 dst.write_all(&data).await.map_err(Into::into)
             }
-            Self::BorrowedSlice(data) => dst.write_all(data).await.map_err(Into::into),
+            Self::BorrowedSlice(data) => {
+                let len = data.len().try_into()?;
+
+                dst.write_u64(len).await?;
+                dst.write_all(data).await.map_err(Into::into)
+            }
             Self::Owned(data) => {
                 let data = ::rkyv::to_bytes(data)?;
+                let len = data.len().try_into()?;
+
+                dst.write_u64(len).await?;
                 dst.write_all(&data).await.map_err(Into::into)
             }
-            Self::OwnedAlignedVec(data) => dst.write_all(data).await.map_err(Into::into),
-            Self::OwnedVec(data) => dst.write_all(data).await.map_err(Into::into),
+            Self::OwnedAlignedVec(data) => {
+                let len = data.len().try_into()?;
+
+                dst.write_u64(len).await?;
+                dst.write_all(data).await.map_err(Into::into)
+            }
+            Self::OwnedVec(data) => {
+                let len = data.len().try_into()?;
+
+                dst.write_u64(len).await?;
+                dst.write_all(data).await.map_err(Into::into)
+            }
             Self::Stream { len, recv } => {
                 dst.write_u64(*len).await?;
                 ::tokio::io::copy(recv, &mut dst)

@@ -44,9 +44,9 @@ tokio = { version = "1.18", default-features = false, features = [
 bytecheck = "0.6"
 
 [[test]]
-name = "ty_derive_simple"
-path = "tests/ty_derive_simple.rs"
-required-features = ["derive", "rkyv/validation"]
+name = "derive_simple"
+path = "tests/derive_simple.rs"
+required-features = ["derive"]
 
 [workspace]
 members = [".", "derive"]
