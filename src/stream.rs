@@ -142,6 +142,23 @@ where
         }
     }
 
+    pub async fn into_owned(self) -> Result<T> {
+        match self {
+            Self::Archived(data) => PinnedInner::<T>::deserialize_from_archived(&data),
+            Self::Borrowed(data) => Ok(data.clone()),
+            Self::BorrowedSlice(data) => PinnedInner::<T>::deserialize_owned(data),
+            Self::Owned(data) => Ok(data),
+            Self::OwnedAlignedVec(data) => PinnedInner::<T>::deserialize_owned(data),
+            Self::OwnedVec(data) => PinnedInner::<T>::deserialize_owned(data),
+            Self::Stream { len, recv } => {
+                // recv data
+                let buf = Self::recv_exact(recv, len).await?;
+
+                PinnedInner::<T>::deserialize_owned(buf)
+            }
+        }
+    }
+
     pub async fn copy_to<W>(&mut self, mut dst: W) -> Result<()>
     where
         T: IsSigned,
