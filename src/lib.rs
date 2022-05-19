@@ -21,6 +21,7 @@ pub mod object;
 pub mod path;
 pub mod pin;
 pub mod primitives;
+pub mod stream;
 
 // re-export core
 pub use ipi as core;
