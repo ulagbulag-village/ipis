@@ -41,7 +41,7 @@ where
     pub async fn recv<R>(mut src: R) -> Result<Self>
     where
         T: IsSigned,
-        R: AsyncRead + Send + Unpin,
+        R: AsyncRead + Unpin,
     {
         let len: usize = src.read_u64().await?.try_into()?;
 
@@ -135,7 +135,7 @@ where
     pub async fn copy_to<W>(&mut self, mut dst: W) -> Result<()>
     where
         T: IsSigned,
-        W: AsyncWrite + Send + Unpin,
+        W: AsyncWrite + Unpin,
     {
         match self {
             Self::Archived(data) => dst.write_all(data.as_ref()).await.map_err(Into::into),
