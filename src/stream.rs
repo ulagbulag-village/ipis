@@ -34,6 +34,23 @@ where
     },
 }
 
+impl<T> DynStream<'static, T>
+where
+    T: Archive + 'static,
+{
+    pub async fn recv<R>(mut src: R) -> Result<Self>
+    where
+        T: IsSigned,
+        R: AsyncRead + Send + Unpin,
+    {
+        let len: usize = src.read_u64().await?.try_into()?;
+
+        let mut buf = vec![0; len];
+        src.read_exact(&mut buf).await?;
+        Ok(Self::OwnedVec(buf))
+    }
+}
+
 impl<'io, T> DynStream<'io, T>
 where
     T: Archive + Serialize<Serializer> + IsSigned + Clone,
@@ -115,10 +132,10 @@ where
         }
     }
 
-    pub async fn copy_to<D>(&mut self, mut dst: D) -> Result<()>
+    pub async fn copy_to<W>(&mut self, mut dst: W) -> Result<()>
     where
         T: IsSigned,
-        D: AsyncWrite + Send + Unpin,
+        W: AsyncWrite + Send + Unpin,
     {
         match self {
             Self::Archived(data) => dst.write_all(data.as_ref()).await.map_err(Into::into),
