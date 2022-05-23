@@ -21,6 +21,7 @@ derive = ["ipis-derive"]
 ipi = { git = "https://github.com/ulagbulag-village/ipi.git" }
 ipis-derive = { path = "./derive", optional = true }
 
+async-recursion = "1.0"
 async-trait = "0.1"
 bitflags = "1.3"
 bytecheck = "0.6"

@@ -1,3 +1,4 @@
+pub extern crate async_recursion;
 pub extern crate async_trait;
 #[macro_use]
 pub extern crate bytecheck;
