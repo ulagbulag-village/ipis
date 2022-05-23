@@ -15,7 +15,6 @@ use crate::path::Path;
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct WordKey {
     pub namespace: String,
-    pub kind: String,
     pub text: Text,
 }
 
@@ -38,6 +37,7 @@ impl ::core::fmt::Display for WordKey {
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct Word {
     pub key: WordKey,
+    pub kind: String,
     pub relpath: bool,
     pub path: Path,
 }
@@ -61,7 +61,6 @@ impl ::core::fmt::Display for Word {
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct WordKeyHash {
     pub namespace: Hash,
-    pub kind: Hash,
     pub text: TextHash,
 }
 
@@ -71,7 +70,6 @@ impl From<WordKey> for WordKeyHash {
     fn from(value: WordKey) -> Self {
         Self {
             namespace: Hash::with_str(&value.namespace),
-            kind: Hash::with_str(&value.kind),
             text: value.text.into(),
         }
     }
@@ -82,6 +80,7 @@ impl From<WordKey> for WordKeyHash {
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct WordHash {
     pub key: WordKeyHash,
+    pub kind: Hash,
     pub relpath: bool,
     pub path: Path,
 }
@@ -92,6 +91,7 @@ impl From<Word> for WordHash {
     fn from(value: Word) -> Self {
         Self {
             key: value.key.into(),
+            kind: Hash::with_str(&value.kind),
             relpath: value.relpath,
             path: value.path,
         }
