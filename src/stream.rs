@@ -1,4 +1,5 @@
 use core::pin::Pin;
+use std::sync::Arc;
 
 use bytecheck::CheckBytes;
 use ipi::{
@@ -28,6 +29,7 @@ where
     Owned(T),
     OwnedAlignedVec(AlignedVec),
     OwnedVec(Vec<u8>),
+    ArcVec(Arc<Vec<u8>>),
     Stream {
         len: u64,
         recv: Pin<Box<dyn AsyncRead + Send + 'static>>,
@@ -105,6 +107,14 @@ where
                     _ => unreachable!(),
                 }
             }
+            Self::ArcVec(data) => {
+                let data = PinnedInner::<T>::deserialize_owned(&**data)?;
+                *self = Self::Owned(data);
+                match self {
+                    Self::Owned(data) => Ok(data),
+                    _ => unreachable!(),
+                }
+            }
             Self::Stream { len, recv } => {
                 // recv data
                 let buf = Self::recv_exact(recv, *len).await?;
@@ -131,6 +141,7 @@ where
             Self::Owned(data) => Ok(data.clone()),
             Self::OwnedAlignedVec(data) => PinnedInner::<T>::deserialize_owned(data),
             Self::OwnedVec(data) => PinnedInner::<T>::deserialize_owned(data),
+            Self::ArcVec(data) => PinnedInner::<T>::deserialize_owned(&**data),
             Self::Stream { len, recv } => {
                 // recv data
                 let buf = Self::recv_exact(recv, *len).await?;
@@ -150,6 +161,7 @@ where
             Self::Owned(data) => Ok(data),
             Self::OwnedAlignedVec(data) => PinnedInner::<T>::deserialize_owned(data),
             Self::OwnedVec(data) => PinnedInner::<T>::deserialize_owned(data),
+            Self::ArcVec(data) => PinnedInner::<T>::deserialize_owned(&**data),
             Self::Stream { len, recv } => {
                 // recv data
                 let buf = Self::recv_exact(recv, len).await?;
@@ -203,6 +215,12 @@ where
                 dst.write_u64(len).await?;
                 dst.write_all(data).await.map_err(Into::into)
             }
+            Self::ArcVec(data) => {
+                let len = data.len().try_into()?;
+
+                dst.write_u64(len).await?;
+                dst.write_all(data).await.map_err(Into::into)
+            }
             Self::Stream { len, recv } => {
                 dst.write_u64(*len).await?;
                 ::tokio::io::copy(recv, &mut dst)
@@ -229,6 +247,7 @@ where
             }
             Self::OwnedAlignedVec(_) => Ok(()),
             Self::OwnedVec(_) => Ok(()),
+            Self::ArcVec(_) => Ok(()),
             Self::Stream { .. } => Ok(()),
         }
     }
