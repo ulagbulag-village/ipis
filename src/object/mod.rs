@@ -1,3 +1,5 @@
+pub mod data;
+
 use std::borrow::Cow;
 
 pub trait Object {
@@ -7,9 +9,11 @@ pub trait Object {
 
     fn __object_doc(&self) -> Cow<crate::class::metadata::ClassDoc>;
 
+    // fn __object_value(&self) -> Option<::ipi::value::Value>;
+
     fn __object_value_ty(&self) -> ::ipi::value::ValueType;
 
-    fn __object_children(&self) -> Option<Cow<[crate::class::metadata::ClassMetadata]>>;
+    // fn __object_children(&self) -> Option<Cow<[self::data::ObjectData]>>;
 
     fn __object_metadata(&self) -> Cow<crate::class::metadata::ClassMetadata>;
 
@@ -34,13 +38,17 @@ where
         <T as Object>::__object_doc(*self)
     }
 
+    // fn __object_value(&self) -> Option<::ipi::value::Value> {
+    //     <T as Object>::__object_value(*self)
+    // }
+
     fn __object_value_ty(&self) -> ::ipi::value::ValueType {
         <T as Object>::__object_value_ty(*self)
     }
 
-    fn __object_children(&self) -> Option<Cow<[crate::class::metadata::ClassMetadata]>> {
-        <T as Object>::__object_children(*self)
-    }
+    // fn __object_children(&self) -> Option<Cow<[self::data::ObjectData]>> {
+    //     <T as Object>::__object_children(*self)
+    // }
 
     fn __object_metadata(&self) -> Cow<crate::class::metadata::ClassMetadata> {
         <T as Object>::__object_metadata(*self)

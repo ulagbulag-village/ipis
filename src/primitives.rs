@@ -114,17 +114,19 @@ macro_rules! impl_class {
                 Cow::Owned(<Self as Class>::__class_doc())
             }
 
+            // fn __object_value(&self) -> Option<::ipi::value::Value> {
+            //     <Self as Class>::__class_value_ty()
+            // }
+
             fn __object_value_ty(&self) -> ::ipi::value::ValueType {
                 <Self as Class>::__class_value_ty()
             }
 
-            fn __object_children(
-                &self,
-            ) -> Option<Cow<[crate::class::metadata::ClassMetadata]>> {
-                <Self as Class>::__class_children()
-                    .map(|e| e)
-                    .map(Into::into)
-            }
+            // fn __object_children(
+            //     &self,
+            // ) -> Option<Cow<[crate::object::data::ObjectData]>> {
+            //     None
+            // }
 
             fn __object_metadata(&self) -> Cow<crate::class::metadata::ClassMetadata> {
                 Cow::Owned(<Self as Class>::__class_metadata())
@@ -153,15 +155,19 @@ macro_rules! impl_class {
                 Cow::Owned(<<Self as Class>::Cursor as Class>::__class_doc())
             }
 
+            // fn __object_value(&self) -> Option<::ipi::value::Value> {
+            //     Some(::ipi::value::Value::$value_ty(*self))
+            // }
+
             fn __object_value_ty(&self) -> ::ipi::value::ValueType {
                 <<Self as Class>::Cursor as Class>::__class_value_ty()
             }
 
-            fn __object_children(
-                &self,
-            ) -> Option<Cow<[crate::class::metadata::ClassMetadata]>> {
-                <<Self as Class>::Cursor as Class>::__class_children().map(Into::into)
-            }
+            // fn __object_children(
+            //     &self,
+            // ) -> Option<Cow<[crate::object::data::ObjectData]>> {
+            //     None
+            // }
 
             fn __object_metadata(&self) -> Cow<crate::class::metadata::ClassMetadata> {
                 Cow::Owned(<<Self as Class>::Cursor as Class>::__class_metadata())

@@ -14,7 +14,6 @@ pub extern crate tokio;
 
 pub mod attention;
 pub mod class;
-pub mod data;
 pub mod env;
 pub mod function;
 pub mod logger;
