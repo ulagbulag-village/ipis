@@ -215,10 +215,10 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                                 <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_value_ty()
                             }
 
-                            fn __object_children(&self) -> Option<Cow<[::ipis::class::metadata::ClassMetadata]>> {
-                                <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_children()
-                                    .map(Into::into)
-                            }
+                            // fn __object_children(&self) -> Option<Cow<[::ipis::class::metadata::ClassMetadata]>> {
+                            //     <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_children()
+                            //         .map(Into::into)
+                            // }
 
                             fn __object_metadata(&self) -> Cow<::ipis::class::metadata::ClassMetadata> {
                                 Cow::Owned(
@@ -303,9 +303,9 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                                 <Self as ::ipis::class::Class>::__class_value_ty()
                             }
 
-                            fn __object_children(&self) -> Option<Cow<[::ipis::class::metadata::ClassMetadata]>> {
-                                <Self as ::ipis::class::Class>::__class_children().map(Into::into)
-                            }
+                            // fn __object_children(&self) -> Option<Cow<[::ipis::class::metadata::ClassMetadata]>> {
+                            //     <Self as ::ipis::class::Class>::__class_children().map(Into::into)
+                            // }
 
                             fn __object_metadata(&self) -> Cow<::ipis::class::metadata::ClassMetadata> {
                                 Cow::Owned(<Self as ::ipis::class::Class>::__class_metadata())
