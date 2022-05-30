@@ -173,7 +173,7 @@ where
 
     pub async fn copy_to<W>(&mut self, mut dst: W) -> Result<()>
     where
-        T: IsSigned,
+        T: Send + Sync,
         W: AsyncWrite + Unpin,
     {
         match self {
@@ -184,7 +184,7 @@ where
                 dst.write_all(data.as_ref()).await.map_err(Into::into)
             }
             Self::Borrowed(data) => {
-                let data = ::rkyv::to_bytes(*data)?;
+                let data = data.to_bytes()?;
                 let len = data.len().try_into()?;
 
                 dst.write_u64(len).await?;
@@ -197,7 +197,7 @@ where
                 dst.write_all(data).await.map_err(Into::into)
             }
             Self::Owned(data) => {
-                let data = ::rkyv::to_bytes(data)?;
+                let data = data.to_bytes()?;
                 let len = data.len().try_into()?;
 
                 dst.write_u64(len).await?;
@@ -231,17 +231,20 @@ where
         }
     }
 
-    pub async fn serialize_inner(&mut self) -> Result<()> {
+    pub async fn serialize_inner(&mut self) -> Result<()>
+    where
+        T: Send + Sync,
+    {
         match self {
             Self::Archived(_) => Ok(()),
             Self::Borrowed(data) => {
-                let data = ::rkyv::to_bytes(*data)?;
+                let data = data.to_bytes()?;
                 *self = Self::OwnedAlignedVec(data);
                 Ok(())
             }
             Self::BorrowedSlice(_) => Ok(()),
             Self::Owned(data) => {
-                let data = ::rkyv::to_bytes(data)?;
+                let data = data.to_bytes()?;
                 *self = Self::OwnedAlignedVec(data);
                 Ok(())
             }
