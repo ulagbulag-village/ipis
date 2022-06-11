@@ -16,6 +16,7 @@ repository = "https://github.com/ulagbulag-village/ipis"
 [features]
 default = ["derive"]
 derive = ["ipis-derive"]
+net = ["tokio/net"]
 
 [dependencies]
 ipi = { git = "https://github.com/ulagbulag-village/ipi.git" }
