@@ -43,9 +43,6 @@ tokio = { version = "1.18", default-features = false, features = [
     "sync",
 ] }
 
-[dev-dependencies]
-bytecheck = "0.6"
-
 [[test]]
 name = "derive_simple"
 path = "tests/derive_simple.rs"
