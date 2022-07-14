@@ -1,5 +1,7 @@
+use std::borrow::Cow;
+
 use bytecheck::CheckBytes;
-use ipi::value::Value;
+use ipi::value::{Value, ValueType};
 
 use crate::{attention::AttentionUnit, class::metadata::ClassLeaf};
 
@@ -54,5 +56,55 @@ where
             },
         )?;
         Ok(&*value)
+    }
+}
+
+impl super::Object for ObjectData {
+    type Cursor = crate::class::cursor::ClassCursorData;
+
+    fn __object_name(&self) -> Cow<crate::class::metadata::ClassName> {
+        Cow::Borrowed(&self.leaf.name)
+    }
+
+    fn __object_doc(&self) -> Cow<crate::class::metadata::ClassDoc> {
+        Cow::Borrowed(&self.leaf.doc)
+    }
+
+    fn __object_value_ty(&self) -> ValueType {
+        self.leaf.ty
+    }
+
+    fn __object_metadata(&self) -> crate::class::metadata::ClassMetadata {
+        crate::class::metadata::ClassMetadata {
+            leaf: self.leaf.clone(),
+            children: self.children.as_ref().map(|children| {
+                children
+                    .iter()
+                    .map(super::Object::__object_metadata)
+                    .collect()
+            }),
+        }
+    }
+
+    fn __object_metadata_leaf(&self) -> Cow<crate::class::metadata::ClassLeaf> {
+        Cow::Borrowed(&self.leaf)
+    }
+}
+
+impl super::ToObjectData for ObjectData {
+    fn __to_object_attention(&self) -> crate::attention::AttentionUnit {
+        self.attention
+    }
+
+    fn __to_object_value(&self) -> Option<Value> {
+        self.value.clone()
+    }
+
+    fn __to_object_children(&self) -> Option<Vec<ObjectData>> {
+        self.children.clone()
+    }
+
+    fn __to_object_data(&self) -> ObjectData {
+        self.clone()
     }
 }

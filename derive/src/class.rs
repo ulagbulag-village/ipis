@@ -139,8 +139,13 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                 });
 
                 // parse children
-                let children = fields.clone().map(|(_, ty)| {
+                let class_children = fields.clone().map(|(_, ty)| {
                     quote! { <#ty as ::ipis::class::Class>::__class_metadata() }
+                });
+
+                // parse children
+                let to_object_children = fields.clone().map(|(ident, _)| {
+                    quote! { ::ipis::object::ToObjectData::__to_object_data(&self.#ident) }
                 });
 
                 // parse cursor methods
@@ -215,15 +220,8 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                                 <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_value_ty()
                             }
 
-                            // fn __object_children(&self) -> Option<Cow<[::ipis::class::metadata::ClassMetadata]>> {
-                            //     <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_children()
-                            //         .map(Into::into)
-                            // }
-
-                            fn __object_metadata(&self) -> Cow<::ipis::class::metadata::ClassMetadata> {
-                                Cow::Owned(
-                                    <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_metadata(),
-                                )
+                            fn __object_metadata(&self) -> ::ipis::class::metadata::ClassMetadata {
+                                <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::__class_metadata()
                             }
 
                             fn __object_metadata_leaf(&self) -> Cow<::ipis::class::metadata::ClassLeaf> {
@@ -236,6 +234,20 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                                 <<Self as ::ipis::class::Class>::Cursor as ::ipis::class::Class>::class_cursor()
                             }
                         }
+
+                        impl #impl_generics_for_object ::ipis::object::ToObjectData for #ident #ty_generics #where_clause_for_object {
+                            fn __to_object_value(&self) -> Option<::ipis::core::value::Value> {
+                                Some(::ipis::core::value::Value::Dyn)
+                            }
+
+                            fn __to_object_children(&self) -> Option<Vec<ipis::object::data::ObjectData>> {
+                                Some(vec![#(
+                                    #to_object_children,
+                                )*])
+                            }
+                        }
+
+                        impl #impl_generics_for_object ::ipis::object::IntoObjectData for #ident #ty_generics #where_clause_for_object {}
 
                         #[derive(Clone, Default)]
                         pub struct Cursor(ClassCursorData);
@@ -283,7 +295,7 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
 
                             fn __class_children() -> Option<Vec<::ipis::class::metadata::ClassMetadata>> {
                                 Some(vec![#(
-                                    #children,
+                                    #class_children,
                                 )*])
                             }
                         }
@@ -303,12 +315,8 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                                 <Self as ::ipis::class::Class>::__class_value_ty()
                             }
 
-                            // fn __object_children(&self) -> Option<Cow<[::ipis::class::metadata::ClassMetadata]>> {
-                            //     <Self as ::ipis::class::Class>::__class_children().map(Into::into)
-                            // }
-
-                            fn __object_metadata(&self) -> Cow<::ipis::class::metadata::ClassMetadata> {
-                                Cow::Owned(<Self as ::ipis::class::Class>::__class_metadata())
+                            fn __object_metadata(&self) -> ::ipis::class::metadata::ClassMetadata {
+                                <Self as ::ipis::class::Class>::__class_metadata()
                             }
 
                             fn __object_metadata_leaf(&self) -> Cow<::ipis::class::metadata::ClassLeaf> {

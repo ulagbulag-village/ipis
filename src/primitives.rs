@@ -1,15 +1,25 @@
 use std::borrow::Cow;
 
-use crate::{class::Class, object::Object};
+use crate::{
+    class::Class,
+    object::{IntoObjectData, Object, ToObjectData},
+};
 
 macro_rules! impl_class {
     (
-        $impl_unsized:ty | $( $impls:ty ),* => $value_ty:ident
+        $impl_unsized:ty | $( $impls:ty ),* => $value_move:ident ( $value_ty:ident )
     ) => {
         const _: () = {
             impl_class!(@class $impl_unsized => $value_ty);
         };
-        impl_class!(| $( $impls ),* => $value_ty);
+        impl_class!(| $( $impls ),* => $value_move ($value_ty));
+    };
+    (
+        | $( $impls:ty ),* => $value_move:ident ( $value_ty:ident )
+    ) => {
+        $(
+            impl_class!($impls => $value_move ($value_ty));
+        )*
     };
     (
         | $( $impls:ty ),* => $value_ty:ident
@@ -17,6 +27,12 @@ macro_rules! impl_class {
         $(
             impl_class!($impls => $value_ty);
         )*
+    };
+    (
+        $impl:ty => $value_move:ident ( $value_ty:ident )
+    ) => {
+        impl_class!($impl => $value_ty);
+        impl_class!(@to_object_value $impl => $value_move ($value_ty));
     };
     (
         $impl:ty => $value_ty:ident
@@ -128,8 +144,8 @@ macro_rules! impl_class {
             //     None
             // }
 
-            fn __object_metadata(&self) -> Cow<crate::class::metadata::ClassMetadata> {
-                Cow::Owned(<Self as Class>::__class_metadata())
+            fn __object_metadata(&self) -> crate::class::metadata::ClassMetadata {
+                <Self as Class>::__class_metadata()
             }
 
             fn __object_metadata_leaf(&self) -> Cow<crate::class::metadata::ClassLeaf> {
@@ -169,8 +185,8 @@ macro_rules! impl_class {
             //     None
             // }
 
-            fn __object_metadata(&self) -> Cow<crate::class::metadata::ClassMetadata> {
-                Cow::Owned(<<Self as Class>::Cursor as Class>::__class_metadata())
+            fn __object_metadata(&self) -> crate::class::metadata::ClassMetadata {
+                <<Self as Class>::Cursor as Class>::__class_metadata()
             }
 
             fn __object_metadata_leaf(&self) -> Cow<crate::class::metadata::ClassLeaf> {
@@ -182,20 +198,84 @@ macro_rules! impl_class {
             }
         }
     };
+    (
+        @to_object_value $impl:ty => $value_move:ident ( $value_ty:ident )
+    ) => {
+        const _: () = {
+            impl ToObjectData for $impl {
+                fn __to_object_value(&self) -> Option<::ipi::value::Value> {
+                    Some(impl_class!(@to_object_value $impl => $value_move ($value_ty) => self))
+                }
+
+                fn __to_object_children(&self) -> Option<Vec<crate::object::data::ObjectData>> {
+                    None
+                }
+            }
+
+            impl IntoObjectData for $impl {
+                fn __into_object_value(self) -> Option<::ipi::value::Value> {
+                    Some(impl_class!(@into_object_value $impl => $value_move ($value_ty) => self))
+                }
+
+                fn __into_object_children(self) -> Option<Vec<crate::object::data::ObjectData>> {
+                    None
+                }
+
+                fn __into_object_data(self) -> crate::object::data::ObjectData {
+                    crate::object::data::ObjectData {
+                        leaf: <$impl as Class>::__class_metadata_leaf(),
+                        attention: self.__to_object_attention(),
+                        value: self.__into_object_value(),
+                        children: None,
+                    }
+                }
+            }
+        };
+    };
+    (
+        @to_object_value $impl:ty => None ( $value_ty:ident ) => $value:expr
+    ) => {
+        ::ipi::value::Value::$value_ty
+    };
+    (
+        @to_object_value $impl:ty => Copy ( $value_ty:ident ) => $value:expr
+    ) => {
+        ::ipi::value::Value::$value_ty(*$value)
+    };
+    (
+        @to_object_value $impl:ty => Clone ( $value_ty:ident ) => $value:expr
+    ) => {
+        ::ipi::value::Value::$value_ty($value.clone())
+    };
+    (
+        @into_object_value $impl:ty => None ( $value_ty:ident ) => $value:expr
+    ) => {
+        ::ipi::value::Value::$value_ty
+    };
+    (
+        @into_object_value $impl:ty => Copy ( $value_ty:ident ) => $value:expr
+    ) => {
+        ::ipi::value::Value::$value_ty($value)
+    };
+    (
+        @into_object_value $impl:ty => Clone ( $value_ty:ident ) => $value:expr
+    ) => {
+        ::ipi::value::Value::$value_ty($value)
+    };
 }
 
-impl_class!(() => None);
-impl_class!(bool => Bool);
-impl_class!(i8 => I8);
-impl_class!(i16 => I16);
-impl_class!(i32 => I32);
-impl_class!(i64 => I64);
-impl_class!(u8 => U8);
-impl_class!(u16 => U16);
-impl_class!(u32 => U32);
-impl_class!(u64 => U64);
-impl_class!(f32 => F32);
-impl_class!(f64 => U64);
-impl_class!([u8] | Vec<u8> => Bytes);
-impl_class!(str | String => String);
-impl_class!(::ipi::value::text::Text => Text);
+impl_class!(() => None(None));
+impl_class!(bool => Copy(Bool));
+impl_class!(i8 => Copy(I8));
+impl_class!(i16 => Copy(I16));
+impl_class!(i32 => Copy(I32));
+impl_class!(i64 => Copy(I64));
+impl_class!(u8 => Copy(U8));
+impl_class!(u16 => Copy(U16));
+impl_class!(u32 => Copy(U32));
+impl_class!(u64 => Copy(U64));
+impl_class!(f32 => Copy(F32));
+impl_class!(f64 => Copy(F64));
+impl_class!([u8] | Vec<u8> => Clone(Bytes));
+impl_class!(String => Clone(String));
+impl_class!(::ipi::value::text::Text => Clone(Text));
