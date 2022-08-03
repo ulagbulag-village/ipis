@@ -5,7 +5,10 @@ use ipi::anyhow::Result;
 use tokio::io::{AsyncRead, AsyncWrite, AsyncWriteExt};
 
 #[async_trait]
-pub trait Resource {
+pub trait Resource
+where
+    Self: Send + Sync,
+{
     async fn release(&mut self) -> Result<()> {
         Ok(())
     }
