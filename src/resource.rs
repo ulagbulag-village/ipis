@@ -6,7 +6,9 @@ use tokio::io::{AsyncRead, AsyncWrite, AsyncWriteExt};
 
 #[async_trait]
 pub trait Resource {
-    async fn release(&mut self) -> Result<()>;
+    async fn release(&mut self) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[async_trait]
