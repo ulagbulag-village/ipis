@@ -5,17 +5,16 @@ use ipi::anyhow::Result;
 use tokio::io::{AsyncRead, AsyncWrite, AsyncWriteExt};
 
 #[async_trait]
-pub trait Resource
-where
-    Self: Send + Sync,
-{
+pub trait Resource {
+    async fn release(&mut self) -> Result<()>;
+}
+
+#[async_trait]
+impl Resource for Pin<Box<dyn AsyncRead + Send + Sync>> {
     async fn release(&mut self) -> Result<()> {
         Ok(())
     }
 }
-
-#[async_trait]
-impl Resource for Pin<Box<dyn AsyncRead + Send + Sync>> {}
 
 #[async_trait]
 impl Resource for Pin<Box<dyn AsyncWrite + Send + Sync>> {
