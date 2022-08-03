@@ -12,11 +12,7 @@ pub trait Resource {
 }
 
 #[async_trait]
-impl Resource for Pin<Box<dyn AsyncRead + Send + Sync>> {
-    async fn release(&mut self) -> Result<()> {
-        Ok(())
-    }
-}
+impl Resource for Pin<Box<dyn AsyncRead + Send + Sync>> {}
 
 #[async_trait]
 impl Resource for Pin<Box<dyn AsyncWrite + Send + Sync>> {
