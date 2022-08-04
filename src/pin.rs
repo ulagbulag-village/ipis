@@ -91,6 +91,6 @@ where
     where
         <T as Archive>::Archived: Deserialize<T, SharedDeserializeMap>,
     {
-        Self::deserialize_from_archived(&**self)
+        Self::deserialize_from_archived(self)
     }
 }
