@@ -12,7 +12,7 @@ pub extern crate paste;
 pub extern crate rkyv;
 pub extern crate tokio;
 #[cfg(feature = "tokio-uring")]
-pub extern crate tokio;
+pub extern crate tokio_uring;
 
 pub mod attention;
 pub mod class;
