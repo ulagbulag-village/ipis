@@ -16,6 +16,8 @@ repository = "https://github.com/ulagbulag-village/ipis"
 [features]
 default = ["derive"]
 derive = ["ipis-derive"]
+
+io-uring = ["tokio-uring"]
 net = ["tokio/net"]
 
 [dependencies]
@@ -45,6 +47,7 @@ tokio = { version = "1.21", default-features = false, features = [
     "time",
     "sync",
 ] }
+tokio-uring = { version = "0.3", optional = true }
 
 [target.'cfg(target_os = "wasi")'.dependencies]
 tokio = { version = "1.21", default-features = false, features = [
@@ -60,6 +63,11 @@ tokio = { version = "1.21", default-features = false, features = [
 name = "derive_simple"
 path = "tests/derive_simple.rs"
 required-features = ["derive"]
+
+[[test]]
+name = "io_uring"
+path = "tests/io_uring.rs"
+required-features = ["io-uring"]
 
 [workspace]
 members = [".", "derive"]
