@@ -11,6 +11,8 @@ pub extern crate paste;
 #[macro_use]
 pub extern crate rkyv;
 pub extern crate tokio;
+#[cfg(feature = "tokio-uring")]
+pub extern crate tokio;
 
 pub mod attention;
 pub mod class;
