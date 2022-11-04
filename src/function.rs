@@ -2,7 +2,18 @@ use ipi::value::text::Text;
 
 use crate::{class::metadata::ClassMetadata, path::DynPath};
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(bound(archive = "
     <IO as ::rkyv::Archive>::Archived: ::core::fmt::Debug + PartialEq,
     <Lambda as ::rkyv::Archive>::Archived: ::core::fmt::Debug + PartialEq,
@@ -17,7 +28,18 @@ pub struct Function<IO = ClassMetadata, Lambda = DynPath> {
 
 impl<IO, Lambda> ::ipi::signed::IsSigned for Function<IO, Lambda> {}
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq))]
 pub enum DynFunction {

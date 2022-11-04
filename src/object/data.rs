@@ -5,7 +5,16 @@ use ipi::value::{Value, ValueType};
 
 use crate::{attention::AttentionUnit, class::metadata::ClassLeaf};
 
-#[derive(Clone, Debug, PartialEq, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(bound(serialize = "
     __S: ::rkyv::ser::ScratchSpace + ::rkyv::ser::Serializer,
 "))]

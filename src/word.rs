@@ -10,7 +10,17 @@ use rkyv::{Archive, Deserialize, Serialize};
 
 use crate::path::Path;
 
-#[derive(Clone, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct WordKey {
@@ -32,7 +42,17 @@ impl ::core::fmt::Display for WordKey {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct Word {
@@ -56,7 +76,19 @@ impl ::core::fmt::Display for Word {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct WordKeyHash {
@@ -75,7 +107,19 @@ impl From<WordKey> for WordKeyHash {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct WordHash {

@@ -1,6 +1,18 @@
 use super::metadata::{ClassLeaf, ClassName};
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    Debug,
+    Default,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct ClassCursorData(Vec<ClassCursorLeaf>);
@@ -28,7 +40,18 @@ impl ClassCursorData {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Archive, Serialize, Deserialize)]
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    Hash,
+    Archive,
+    Serialize,
+    Deserialize,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+)]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(CheckBytes, Debug, PartialEq, Eq, Hash))]
 pub struct ClassCursorLeaf {
