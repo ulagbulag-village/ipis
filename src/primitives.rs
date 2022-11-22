@@ -130,19 +130,9 @@ macro_rules! impl_class {
                 Cow::Owned(<Self as Class>::__class_doc())
             }
 
-            // fn __object_value(&self) -> Option<::ipi::value::Value> {
-            //     <Self as Class>::__class_value_ty()
-            // }
-
             fn __object_value_ty(&self) -> ::ipi::value::ValueType {
                 <Self as Class>::__class_value_ty()
             }
-
-            // fn __object_children(
-            //     &self,
-            // ) -> Option<Cow<[crate::object::data::ObjectData]>> {
-            //     None
-            // }
 
             fn __object_metadata(&self) -> crate::class::metadata::ClassMetadata {
                 <Self as Class>::__class_metadata()
@@ -171,19 +161,9 @@ macro_rules! impl_class {
                 Cow::Owned(<<Self as Class>::Cursor as Class>::__class_doc())
             }
 
-            // fn __object_value(&self) -> Option<::ipi::value::Value> {
-            //     Some(::ipi::value::Value::$value_ty(*self))
-            // }
-
             fn __object_value_ty(&self) -> ::ipi::value::ValueType {
                 <<Self as Class>::Cursor as Class>::__class_value_ty()
             }
-
-            // fn __object_children(
-            //     &self,
-            // ) -> Option<Cow<[crate::object::data::ObjectData]>> {
-            //     None
-            // }
 
             fn __object_metadata(&self) -> crate::class::metadata::ClassMetadata {
                 <<Self as Class>::Cursor as Class>::__class_metadata()
@@ -210,6 +190,22 @@ macro_rules! impl_class {
                 fn __to_object_children(&self) -> Option<Vec<crate::object::data::ObjectData>> {
                     None
                 }
+
+                fn __get_object_value(&self, path: &[::ipi::value::text::Text]) -> Option<::ipi::value::Value> {
+                    if path.is_empty() {
+                        self.__to_object_value()
+                    } else {
+                        None
+                    }
+                }
+
+                fn __get_object_data(&self, path: &[::ipi::value::text::Text]) -> Option<crate::object::data::ObjectData> {
+                    if path.is_empty() {
+                        Some(self.__to_object_data())
+                    } else {
+                        None
+                    }
+                }
             }
 
             impl IntoObjectData for $impl {
@@ -225,6 +221,7 @@ macro_rules! impl_class {
                     crate::object::data::ObjectData {
                         leaf: <$impl as Class>::__class_metadata_leaf(),
                         attention: self.__to_object_attention(),
+                        confidence: self.__to_object_attention(),
                         value: self.__into_object_value(),
                         children: None,
                     }

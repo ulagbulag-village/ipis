@@ -23,6 +23,7 @@ use crate::{attention::AttentionUnit, class::metadata::ClassLeaf};
 pub struct ObjectData {
     pub leaf: ClassLeaf,
     pub attention: AttentionUnit,
+    pub confidence: AttentionUnit,
     pub value: Option<Value>,
     #[omit_bounds]
     pub children: Option<Vec<ObjectData>>,
@@ -47,9 +48,9 @@ where
                 inner: ::bytecheck::ErrorBox::new(e),
             },
         )?;
-        CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).attention), context)
+        CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).confidence), context)
             .map_err(|e| ::bytecheck::StructCheckError {
-                field_name: stringify!(attention),
+                field_name: stringify!(confidence),
                 inner: ::bytecheck::ErrorBox::new(e),
             })?;
         CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).value), context).map_err(
@@ -115,5 +116,27 @@ impl super::ToObjectData for ObjectData {
 
     fn __to_object_data(&self) -> ObjectData {
         self.clone()
+    }
+
+    fn __get_object_value(&self, path: &[::ipi::value::text::Text]) -> Option<Value> {
+        if path.is_empty() {
+            self.__to_object_value()
+        } else {
+            self.children
+                .as_ref()
+                .and_then(|children| children.iter().find(|child| child.leaf.name == path[0]))
+                .and_then(|child| child.__get_object_value(&path[1..]))
+        }
+    }
+
+    fn __get_object_data(&self, path: &[::ipi::value::text::Text]) -> Option<ObjectData> {
+        if path.is_empty() {
+            Some(self.__to_object_data())
+        } else {
+            self.children
+                .as_ref()
+                .and_then(|children| children.iter().find(|child| child.leaf.name == path[0]))
+                .and_then(|child| child.__get_object_data(&path[1..]))
+        }
     }
 }

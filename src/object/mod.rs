@@ -67,10 +67,18 @@ where
         self::data::ObjectData {
             leaf: self.__object_metadata_leaf().into_owned(),
             attention: self.__to_object_attention(),
+            confidence: self.__to_object_attention(),
             value: self.__to_object_value(),
             children: self.__to_object_children(),
         }
     }
+
+    fn __get_object_value(&self, path: &[::ipi::value::text::Text]) -> Option<::ipi::value::Value>;
+
+    fn __get_object_data(
+        &self,
+        path: &[::ipi::value::text::Text],
+    ) -> Option<self::data::ObjectData>;
 }
 
 impl<T> ToObjectData for &T
@@ -91,6 +99,17 @@ where
 
     fn __to_object_data(&self) -> self::data::ObjectData {
         <T as ToObjectData>::__to_object_data(*self)
+    }
+
+    fn __get_object_value(&self, path: &[::ipi::value::text::Text]) -> Option<::ipi::value::Value> {
+        <T as ToObjectData>::__get_object_value(*self, path)
+    }
+
+    fn __get_object_data(
+        &self,
+        path: &[::ipi::value::text::Text],
+    ) -> Option<self::data::ObjectData> {
+        <T as ToObjectData>::__get_object_data(*self, path)
     }
 }
 

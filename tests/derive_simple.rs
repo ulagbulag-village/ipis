@@ -5,7 +5,7 @@ use bytecheck::CheckBytes;
 use ipi::value::text::Text;
 use ipis::{
     class::{metadata::ClassMetadata, Class},
-    object::Object,
+    object::{Object, ToObjectData},
 };
 use rkyv::{de::deserializers::SharedDeserializeMap, Deserialize};
 
@@ -65,6 +65,26 @@ fn test() {
     assert_eq!(
         value.cursor().sub().unit().__object_name().to_string(),
         "()",
+    );
+
+    // Test derived object values
+    assert_eq!(
+        value
+            .__get_object_value(&[Text::with_en_us("sub"), Text::with_en_us("i64")])
+            .unwrap()
+            .to_string(),
+        "42",
+    );
+
+    // Test derived object data
+    assert_eq!(
+        value
+            .__get_object_data(&[Text::with_en_us("sub"), Text::with_en_us("i64")])
+            .unwrap()
+            .__to_object_value()
+            .unwrap()
+            .to_string(),
+        "42",
     );
 
     {
