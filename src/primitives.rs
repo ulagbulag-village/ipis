@@ -220,8 +220,6 @@ macro_rules! impl_class {
                 fn __into_object_data(self) -> crate::object::data::ObjectData {
                     crate::object::data::ObjectData {
                         leaf: <$impl as Class>::__class_metadata_leaf(),
-                        attention: self.__to_object_attention(),
-                        confidence: self.__to_object_attention(),
                         value: self.__into_object_value(),
                         children: None,
                     }

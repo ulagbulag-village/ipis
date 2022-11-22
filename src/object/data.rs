@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use bytecheck::CheckBytes;
 use ipi::value::{Value, ValueType};
 
-use crate::{attention::AttentionUnit, class::metadata::ClassLeaf};
+use crate::class::metadata::ClassLeaf;
 
 #[derive(
     Clone,
@@ -22,8 +22,6 @@ use crate::{attention::AttentionUnit, class::metadata::ClassLeaf};
 #[archive_attr(derive(Debug, PartialEq))]
 pub struct ObjectData {
     pub leaf: ClassLeaf,
-    pub attention: AttentionUnit,
-    pub confidence: AttentionUnit,
     pub value: Option<Value>,
     #[omit_bounds]
     pub children: Option<Vec<ObjectData>>,
@@ -48,11 +46,6 @@ where
                 inner: ::bytecheck::ErrorBox::new(e),
             },
         )?;
-        CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).confidence), context)
-            .map_err(|e| ::bytecheck::StructCheckError {
-                field_name: stringify!(confidence),
-                inner: ::bytecheck::ErrorBox::new(e),
-            })?;
         CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).value), context).map_err(
             |e| ::bytecheck::StructCheckError {
                 field_name: stringify!(value),
@@ -102,10 +95,6 @@ impl super::Object for ObjectData {
 }
 
 impl super::ToObjectData for ObjectData {
-    fn __to_object_attention(&self) -> crate::attention::AttentionUnit {
-        self.attention
-    }
-
     fn __to_object_value(&self) -> Option<Value> {
         self.value.clone()
     }

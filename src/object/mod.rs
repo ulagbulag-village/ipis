@@ -55,10 +55,6 @@ pub trait ToObjectData
 where
     Self: Object,
 {
-    fn __to_object_attention(&self) -> crate::attention::AttentionUnit {
-        crate::attention::AttentionUnit::Usually
-    }
-
     fn __to_object_value(&self) -> Option<::ipi::value::Value>;
 
     fn __to_object_children(&self) -> Option<Vec<self::data::ObjectData>>;
@@ -66,8 +62,6 @@ where
     fn __to_object_data(&self) -> self::data::ObjectData {
         self::data::ObjectData {
             leaf: self.__object_metadata_leaf().into_owned(),
-            attention: self.__to_object_attention(),
-            confidence: self.__to_object_attention(),
             value: self.__to_object_value(),
             children: self.__to_object_children(),
         }
@@ -85,10 +79,6 @@ impl<T> ToObjectData for &T
 where
     T: ?Sized + ToObjectData,
 {
-    fn __to_object_attention(&self) -> crate::attention::AttentionUnit {
-        <T as ToObjectData>::__to_object_attention(*self)
-    }
-
     fn __to_object_value(&self) -> Option<::ipi::value::Value> {
         <T as ToObjectData>::__to_object_value(*self)
     }
@@ -117,10 +107,6 @@ pub trait IntoObjectData
 where
     Self: ToObjectData + Sized,
 {
-    fn __into_object_attention(self) -> crate::attention::AttentionUnit {
-        self.__to_object_attention()
-    }
-
     fn __into_object_value(self) -> Option<::ipi::value::Value> {
         self.__to_object_value()
     }
