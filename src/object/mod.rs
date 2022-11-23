@@ -51,16 +51,22 @@ where
     }
 }
 
-pub trait ToObjectData
+pub trait ToObjectData<Metadata>
 where
     Self: Object,
+    Metadata: Default,
 {
+    fn __to_object_metadata(&self) -> Metadata {
+        Default::default()
+    }
+
     fn __to_object_value(&self) -> Option<::ipi::value::Value>;
 
-    fn __to_object_children(&self) -> Option<Vec<self::data::ObjectData>>;
+    fn __to_object_children(&self) -> Option<Vec<self::data::ObjectData<Metadata>>>;
 
-    fn __to_object_data(&self) -> self::data::ObjectData {
+    fn __to_object_data(&self) -> self::data::ObjectData<Metadata> {
         self::data::ObjectData {
+            metadata: self.__to_object_metadata(),
             leaf: self.__object_metadata_leaf().into_owned(),
             value: self.__to_object_value(),
             children: self.__to_object_children(),
@@ -72,50 +78,56 @@ where
     fn __get_object_data(
         &self,
         path: &[::ipi::value::text::Text],
-    ) -> Option<self::data::ObjectData>;
+    ) -> Option<self::data::ObjectData<Metadata>>;
 }
 
-impl<T> ToObjectData for &T
+impl<T, Metadata> ToObjectData<Metadata> for &T
 where
-    T: ?Sized + ToObjectData,
+    T: ?Sized + ToObjectData<Metadata>,
+    Metadata: Default,
 {
+    fn __to_object_metadata(&self) -> Metadata {
+        <T as ToObjectData<Metadata>>::__to_object_metadata(*self)
+    }
+
     fn __to_object_value(&self) -> Option<::ipi::value::Value> {
-        <T as ToObjectData>::__to_object_value(*self)
+        <T as ToObjectData<Metadata>>::__to_object_value(*self)
     }
 
-    fn __to_object_children(&self) -> Option<Vec<self::data::ObjectData>> {
-        <T as ToObjectData>::__to_object_children(*self)
+    fn __to_object_children(&self) -> Option<Vec<self::data::ObjectData<Metadata>>> {
+        <T as ToObjectData<Metadata>>::__to_object_children(*self)
     }
 
-    fn __to_object_data(&self) -> self::data::ObjectData {
-        <T as ToObjectData>::__to_object_data(*self)
+    fn __to_object_data(&self) -> self::data::ObjectData<Metadata> {
+        <T as ToObjectData<Metadata>>::__to_object_data(*self)
     }
 
     fn __get_object_value(&self, path: &[::ipi::value::text::Text]) -> Option<::ipi::value::Value> {
-        <T as ToObjectData>::__get_object_value(*self, path)
+        <T as ToObjectData<Metadata>>::__get_object_value(*self, path)
     }
 
     fn __get_object_data(
         &self,
         path: &[::ipi::value::text::Text],
-    ) -> Option<self::data::ObjectData> {
-        <T as ToObjectData>::__get_object_data(*self, path)
+    ) -> Option<self::data::ObjectData<Metadata>> {
+        <T as ToObjectData<Metadata>>::__get_object_data(*self, path)
     }
 }
 
-pub trait IntoObjectData
+pub trait IntoObjectData<Metadata>
 where
-    Self: ToObjectData + Sized,
+    Self: ToObjectData<Metadata> + Sized,
+    Metadata: Default,
 {
     fn __into_object_value(self) -> Option<::ipi::value::Value> {
         self.__to_object_value()
     }
 
-    fn __into_object_children(self) -> Option<Vec<self::data::ObjectData>> {
+    fn __into_object_children(self) -> Option<Vec<self::data::ObjectData<Metadata>>> {
         self.__to_object_children()
     }
 
-    fn __into_object_data(self) -> self::data::ObjectData {
+    fn __into_object_data(self) -> self::data::ObjectData<Metadata> {
         self.__to_object_data()
     }
 }

@@ -145,17 +145,17 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
 
                 // parse object children
                 let to_object_children = fields.clone().map(|(ident, _)| {
-                    quote! { ::ipis::object::ToObjectData::__to_object_data(&self.#ident) }
+                    quote! { ::ipis::object::ToObjectData::<__Metadata>::__to_object_data(&self.#ident) }
                 });
 
                 // parse object value
                 let get_object_value = fields.clone().map(|(ident, _)| {
-                    quote! { stringify!(#ident) => ::ipis::object::ToObjectData::__get_object_value(&self.#ident, &path[1..]) }
+                    quote! { stringify!(#ident) => ::ipis::object::ToObjectData::<__Metadata>::__get_object_value(&self.#ident, &path[1..]) }
                 });
 
                 // parse object data
                 let get_object_data = fields.clone().map(|(ident, _)| {
-                    quote! { stringify!(#ident) => ::ipis::object::ToObjectData::__get_object_data(&self.#ident, &path[1..]) }
+                    quote! { stringify!(#ident) => ::ipis::object::ToObjectData::<__Metadata>::__get_object_data(&self.#ident, &path[1..]) }
                 });
 
                 // parse cursor methods
@@ -243,12 +243,15 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                             }
                         }
 
-                        impl #impl_generics_for_object ::ipis::object::ToObjectData for #ident #ty_generics #where_clause_for_object {
+                        impl<__Metadata> #impl_generics_for_object ::ipis::object::ToObjectData<__Metadata> for #ident #ty_generics #where_clause_for_object
+                        where
+                            __Metadata: Default,
+                        {
                             fn __to_object_value(&self) -> Option<::ipis::core::value::Value> {
                                 Some(::ipis::core::value::Value::Dyn)
                             }
 
-                            fn __to_object_children(&self) -> Option<Vec<::ipis::object::data::ObjectData>> {
+                            fn __to_object_children(&self) -> Option<Vec<::ipis::object::data::ObjectData<__Metadata>>> {
                                 Some(vec![#(
                                     #to_object_children,
                                 )*])
@@ -256,7 +259,7 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
 
                             fn __get_object_value(&self, path: &[::ipis::core::value::text::Text]) -> Option<::ipis::core::value::Value> {
                                 if path.is_empty() {
-                                    self.__to_object_value()
+                                    ::ipis::object::ToObjectData::<__Metadata>::__to_object_value(self)
                                 } else {
                                     match path[0].msg.as_str() {
                                         #(
@@ -267,7 +270,7 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                                 }
                             }
 
-                            fn __get_object_data(&self, path: &[::ipis::core::value::text::Text]) -> Option<::ipis::object::data::ObjectData> {
+                            fn __get_object_data(&self, path: &[::ipis::core::value::text::Text]) -> Option<::ipis::object::data::ObjectData<__Metadata>> {
                                 if path.is_empty() {
                                     Some(self.__to_object_data())
                                 } else {
@@ -281,7 +284,10 @@ pub fn expand_derive_serialize(input: syn::DeriveInput) -> Result<TokenStream, V
                             }
                         }
 
-                        impl #impl_generics_for_object ::ipis::object::IntoObjectData for #ident #ty_generics #where_clause_for_object {}
+                        impl<__Metadata> #impl_generics_for_object ::ipis::object::IntoObjectData<__Metadata> for #ident #ty_generics #where_clause_for_object
+                        where
+                            __Metadata: Default,
+                        {}
 
                         #[derive(Clone, Default)]
                         pub struct Cursor(::ipis::class::cursor::ClassCursorData);

@@ -69,22 +69,26 @@ fn test() {
 
     // Test derived object values
     assert_eq!(
-        value
-            .__get_object_value(&[Text::with_en_us("sub"), Text::with_en_us("i64")])
-            .unwrap()
-            .to_string(),
+        ToObjectData::<()>::__get_object_value(
+            &value,
+            &[Text::with_en_us("sub"), Text::with_en_us("i64")],
+        )
+        .unwrap()
+        .to_string(),
         "42",
     );
 
     // Test derived object data
     assert_eq!(
-        value
-            .__get_object_data(&[Text::with_en_us("sub"), Text::with_en_us("i64")])
-            .unwrap()
-            .__to_object_value()
-            .unwrap()
-            .to_string(),
-        "42",
+        ToObjectData::<()>::__get_object_data(
+            &value,
+            &[Text::with_en_us("sub"), Text::with_en_us("text")],
+        )
+        .unwrap()
+        .__to_object_value()
+        .unwrap()
+        .to_string(),
+        "hello world!",
     );
 
     {

@@ -182,24 +182,27 @@ macro_rules! impl_class {
         @to_object_value $impl:ty => $value_move:ident ( $value_ty:ident )
     ) => {
         const _: () = {
-            impl ToObjectData for $impl {
+            impl<Metadata> ToObjectData<Metadata> for $impl
+            where
+                Metadata: Default,
+            {
                 fn __to_object_value(&self) -> Option<::ipi::value::Value> {
                     Some(impl_class!(@to_object_value $impl => $value_move ($value_ty) => self))
                 }
 
-                fn __to_object_children(&self) -> Option<Vec<crate::object::data::ObjectData>> {
+                fn __to_object_children(&self) -> Option<Vec<crate::object::data::ObjectData<Metadata>>> {
                     None
                 }
 
                 fn __get_object_value(&self, path: &[::ipi::value::text::Text]) -> Option<::ipi::value::Value> {
                     if path.is_empty() {
-                        self.__to_object_value()
+                        ToObjectData::<Metadata>::__to_object_value(self)
                     } else {
                         None
                     }
                 }
 
-                fn __get_object_data(&self, path: &[::ipi::value::text::Text]) -> Option<crate::object::data::ObjectData> {
+                fn __get_object_data(&self, path: &[::ipi::value::text::Text]) -> Option<crate::object::data::ObjectData<Metadata>> {
                     if path.is_empty() {
                         Some(self.__to_object_data())
                     } else {
@@ -208,19 +211,23 @@ macro_rules! impl_class {
                 }
             }
 
-            impl IntoObjectData for $impl {
+            impl<Metadata> IntoObjectData<Metadata> for $impl
+            where
+                Metadata: Default,
+            {
                 fn __into_object_value(self) -> Option<::ipi::value::Value> {
                     Some(impl_class!(@into_object_value $impl => $value_move ($value_ty) => self))
                 }
 
-                fn __into_object_children(self) -> Option<Vec<crate::object::data::ObjectData>> {
+                fn __into_object_children(self) -> Option<Vec<crate::object::data::ObjectData<Metadata>>> {
                     None
                 }
 
-                fn __into_object_data(self) -> crate::object::data::ObjectData {
+                fn __into_object_data(self) -> crate::object::data::ObjectData<Metadata> {
                     crate::object::data::ObjectData {
+                        metadata: self.__to_object_metadata(),
                         leaf: <$impl as Class>::__class_metadata_leaf(),
-                        value: self.__into_object_value(),
+                        value: IntoObjectData::<Metadata>::__into_object_value(self),
                         children: None,
                     }
                 }

@@ -15,24 +15,30 @@ use crate::class::metadata::ClassLeaf;
     ::serde::Serialize,
     ::serde::Deserialize,
 )]
+#[archive(bound(archive = "
+    <Metadata as ::rkyv::Archive>::Archived: ::core::fmt::Debug + PartialEq,
+"))]
 #[archive(bound(serialize = "
     __S: ::rkyv::ser::ScratchSpace + ::rkyv::ser::Serializer,
 "))]
 #[archive(compare(PartialEq))]
 #[archive_attr(derive(Debug, PartialEq))]
-pub struct ObjectData {
+pub struct ObjectData<Metadata> {
+    pub metadata: Metadata,
     pub leaf: ClassLeaf,
     pub value: Option<Value>,
     #[omit_bounds]
-    pub children: Option<Vec<ObjectData>>,
+    pub children: Option<Vec<ObjectData<Metadata>>>,
 }
 
-impl ::ipi::signed::IsSigned for ObjectData {}
+impl<Metadata> ::ipi::signed::IsSigned for ObjectData<Metadata> {}
 
-impl<__C> CheckBytes<__C> for ArchivedObjectData
+impl<__C, Metadata> CheckBytes<__C> for ArchivedObjectData<Metadata>
 where
     __C: ::rkyv::validation::ArchiveContext,
     <__C as ::rkyv::Fallible>::Error: ::std::error::Error,
+    Metadata: ::rkyv::Archive,
+    <Metadata as ::rkyv::Archive>::Archived: CheckBytes<__C> + ::core::fmt::Debug + PartialEq,
 {
     type Error = ::bytecheck::StructCheckError;
 
@@ -40,6 +46,12 @@ where
         value: *const Self,
         context: &mut __C,
     ) -> Result<&'__bytecheck Self, Self::Error> {
+        CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).metadata), context).map_err(
+            |e| ::bytecheck::StructCheckError {
+                field_name: stringify!(metadata),
+                inner: ::bytecheck::ErrorBox::new(e),
+            },
+        )?;
         CheckBytes::<__C>::check_bytes(::core::ptr::addr_of!((*value).leaf), context).map_err(
             |e| ::bytecheck::StructCheckError {
                 field_name: stringify!(leaf),
@@ -62,7 +74,7 @@ where
     }
 }
 
-impl super::Object for ObjectData {
+impl<Metadata> super::Object for ObjectData<Metadata> {
     type Cursor = crate::class::cursor::ClassCursorData;
 
     fn __object_name(&self) -> Cow<crate::class::metadata::ClassName> {
@@ -94,16 +106,19 @@ impl super::Object for ObjectData {
     }
 }
 
-impl super::ToObjectData for ObjectData {
+impl<Metadata> super::ToObjectData<Metadata> for ObjectData<Metadata>
+where
+    Metadata: Clone + Default,
+{
     fn __to_object_value(&self) -> Option<Value> {
         self.value.clone()
     }
 
-    fn __to_object_children(&self) -> Option<Vec<ObjectData>> {
+    fn __to_object_children(&self) -> Option<Vec<ObjectData<Metadata>>> {
         self.children.clone()
     }
 
-    fn __to_object_data(&self) -> ObjectData {
+    fn __to_object_data(&self) -> ObjectData<Metadata> {
         self.clone()
     }
 
@@ -118,7 +133,7 @@ impl super::ToObjectData for ObjectData {
         }
     }
 
-    fn __get_object_data(&self, path: &[::ipi::value::text::Text]) -> Option<ObjectData> {
+    fn __get_object_data(&self, path: &[::ipi::value::text::Text]) -> Option<ObjectData<Metadata>> {
         if path.is_empty() {
             Some(self.__to_object_data())
         } else {
