@@ -278,6 +278,5 @@ impl_class!(u32 => Copy(U32));
 impl_class!(u64 => Copy(U64));
 impl_class!(f32 => Copy(F32));
 impl_class!(f64 => Copy(F64));
-impl_class!([u8] | Vec<u8> => Clone(Bytes));
-impl_class!(String => Clone(String));
+impl_class!(::ipi::value::bytes::Bytes => Clone(Bytes));
 impl_class!(::ipi::value::text::Text => Clone(Text));

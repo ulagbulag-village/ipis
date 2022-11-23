@@ -2,7 +2,7 @@
 extern crate rkyv;
 
 use bytecheck::CheckBytes;
-use ipi::value::text::Text;
+use ipi::value::{bytes::Bytes, text::Text};
 use ipis::{
     class::{metadata::ClassMetadata, Class},
     object::{Object, ToObjectData},
@@ -28,8 +28,7 @@ fn test() {
         u64: u64,
         f32: f32,
         f64: f64,
-        bytes: Vec<u8>,
-        string: String,
+        bytes: Bytes,
         text: Text,
     }
 
@@ -41,8 +40,7 @@ fn test() {
             u64: 42,
             f32: 42.0,
             f64: 42.0,
-            bytes: vec![0x12, 0x34, 0x56, 0x78],
-            string: "hello world!".to_string(),
+            bytes: Bytes(vec![0x12, 0x34, 0x56, 0x78]),
             text: Text::with_en_us("hello world!"),
         },
     };
@@ -99,8 +97,9 @@ fn test() {
         let archived = rkyv::check_archived_root::<MyStruct>(&bytes[..]).unwrap();
         assert_eq!(archived, &value);
         assert_eq!(archived.sub.i64, 42);
-        assert_eq!(&archived.sub.bytes, &[0x12, 0x34, 0x56, 0x78]);
-        assert_eq!(&archived.sub.string, "hello world!");
+        assert_eq!(&archived.sub.bytes.0, &[0x12, 0x34, 0x56, 0x78]);
+        assert_eq!(&archived.sub.text.msg, "hello world!");
+        assert_eq!(&archived.sub.text.lang, "en-US");
 
         // And you can always deserialize back to the original type
         let deserialized: MyStruct = archived

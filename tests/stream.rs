@@ -4,7 +4,7 @@ extern crate rkyv;
 use std::io::Cursor;
 
 use bytecheck::CheckBytes;
-use ipi::value::text::Text;
+use ipi::value::{bytes::Bytes, text::Text};
 use ipis::{class::Class, core::signed::IsSigned, stream::DynStream, tokio};
 
 #[tokio::test]
@@ -28,8 +28,7 @@ async fn test() {
         u64: u64,
         f32: f32,
         f64: f64,
-        bytes: Vec<u8>,
-        string: String,
+        bytes: Bytes,
         text: Text,
     }
 
@@ -41,8 +40,7 @@ async fn test() {
             u64: 42,
             f32: 42.0,
             f64: 42.0,
-            bytes: vec![0x12, 0x34, 0x56, 0x78],
-            string: "hello world!".to_string(),
+            bytes: Bytes(vec![0x12, 0x34, 0x56, 0x78]),
             text: Text::with_en_us("hello world!"),
         },
     };
