@@ -19,6 +19,7 @@ derive = ["ipis-derive"]
 
 io-uring = ["tokio-uring"]
 net = ["tokio/net"]
+tokio-full = ["tokio/full"]
 
 [dependencies]
 ipi = { git = "https://github.com/ulagbulag-village/ipi.git" }
